@@ -1,12 +1,14 @@
 version: '3'
 services:
+
   web:
     build: .
     ports:
-     - "8000:8000"
+     - "31337:31337"
     volumes:
       - .:/code
     depends_on:
       - redis
+
   redis:
     image: "redis"

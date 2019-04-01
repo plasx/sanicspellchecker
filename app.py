@@ -18,8 +18,8 @@ def conforms(word):
 
 
 def suggestions(word):
-    r = redis.Redis(host='redis', port=6379, db=0, decode_responses=True)
-    recommendedwords = [user for user in r.sscan_iter(word[0], match=f'{word}*')]
+    r = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
+    recommendedwords = [user for user in r.sscan_iter(word[0], match=f"{word}*")]
     if not recommendedwords and len(word) > 2:
         suggestions(word[:-1])
     else:
@@ -36,7 +36,7 @@ async def spellchecker(request, word):
         result = r.sismember(word[0], word)
         redis_check = "true" if result is True else "false"
         if redis_check == "false":
-            recommendedwords = [user for user in r.sscan_iter(word[0], match=f'{word}*')]
+            recommendedwords = [user for user in r.sscan_iter(word[0], match=f"{word}*")]
             return json({"suggestions": recommendedwords or [], "correct": redis_check})
         else:
             return json({"suggestions": [], "correct": "true"})
@@ -47,4 +47,4 @@ async def spellchecker(request, word):
         abort(404)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=31337, debug=True)
