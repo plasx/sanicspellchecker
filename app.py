@@ -13,14 +13,27 @@ app.config.update(
 )
 
 redis = SanicRedis(app)
-async def caseChecker(word):
-    pass
 
-async def suggestions(partofword):
+
+def conforms(word):
+    if word == word.upper() or word == word.lower():
+        return True
+    else:
+        for i in range(1, len(word)):
+            if word[i].isupper():
+                return False
+    return True
+
+
+def suggestions(word):
     with await redis.conn as r:
-        await r.set('key', 'value1')
-        result = await r.sismember(partofword[0], partofword)
-        redis_check = "true" if result == 1 else "false"
+        result = await r.sismember(word[0], word)
+        if result == 0:
+            recommendedwords = [user for user in r.sscan_iter(word[0], match=f'{word}*')]
+        if not recommendedwords and len(word) > 3:
+            await suggestions(word[:-1])
+        else:
+            return recommendedwords
 
 @app.route('/')
 async def test(request):
@@ -28,14 +41,18 @@ async def test(request):
 
 @app.route('/spellcheck/<word>')
 async def spellchecker(request, word):
-    with await redis.conn as r:
-        result = await r.sismember(word[0], word)
-        redis_check = "true" if result == 1 else "false"
-        if redis_check == false:
-            pass
-
-    return json({"suggestions": [], "correct": redis_check})
-    # return json({'hello': f'world{word}', 'redis_results':result})
+    if conforms(word):
+        with await redis.conn as r:
+            result = await r.sismember(word[0], word)
+            redis_check = "true" if result == 1 else "false"
+            if redis_check == "false":
+                import ipdb; ipdb.sset_trace()
+                recommendedwords = [user for user in r.sscan_iter(word[0], match=f'{word}*')]
+                print(recommendedwords)
+                return json({"suggestions": [], "correct": redis_check})
+        return json({"suggestions": [], "correct": redis_check})
+    else:
+        return json({"suggestions": [], "correct": redis_check})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)
