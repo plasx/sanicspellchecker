@@ -1,9 +1,8 @@
 # Spellchecker
-This is a spellchecker which compares to a preloaded list of word from a file into redis in Sanic:
-GET /spellcheck/{word}
+This is a spellchecker which compares to a preloaded list of word from a file into redis in Sanic.
 Runs on port 31337.
-Return 404 if the word is not found
-Return 200 if the word is found
+Return 404 if the word is not found.
+Return 200 if the word is found.
 
 ### Setup
 
