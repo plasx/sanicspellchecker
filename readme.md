@@ -1,5 +1,5 @@
-# Spellchecker
-This is a spellchecker which compares to a preloaded list of word from a file into redis in Sanic.
+# Sanic SpellChecker
+This is a spellchecker which compares to a preloaded list of word from a file into redis in Sanic which is checked by the application when a word is passed.
 Runs on port 31337.
 Return 404 if the word is not found.
 Return 200 if the word is found.
